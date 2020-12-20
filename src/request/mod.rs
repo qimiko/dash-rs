@@ -44,13 +44,20 @@ pub mod comment;
 pub mod level;
 pub mod user;
 
-pub const REQUEST_BASE_URL: &str = "http://www.boomlings.com/database/";
+pub const REQUEST_BASE_URL: &str = "http://absolllute.com/gdps/gdapi/";
 
 /// A `BaseRequest` instance that has all its fields set to the
 /// same values a Geometry Dash 2.1 client would use
 pub const GD_21: BaseRequest = BaseRequest::new(
     GameVersion::Version { major: 2, minor: 1 },
     GameVersion::Version { major: 3, minor: 3 },
+    "Wmfd2893gb7",
+);
+
+/// same values a Geometry Dash 1.9 client would use
+pub const GD_19: BaseRequest = BaseRequest::new(
+    GameVersion::Version { major: 1, minor: 9 },
+    GameVersion::Version { major: 2, minor: 4 },
     "Wmfd2893gb7",
 );
 
@@ -102,7 +109,7 @@ impl BaseRequest<'_> {
 
 impl Default for BaseRequest<'static> {
     fn default() -> Self {
-        GD_21
+        GD_19
     }
 }
 

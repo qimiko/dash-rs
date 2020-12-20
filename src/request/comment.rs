@@ -2,7 +2,7 @@
 
 use crate::{
     model::level::Level,
-    request::{BaseRequest, GD_21, REQUEST_BASE_URL},
+    request::{BaseRequest, GD_21, GD_19, REQUEST_BASE_URL},
 };
 use serde::Serialize;
 
@@ -88,7 +88,7 @@ impl<'a> LevelCommentsRequest<'a> {
     }
 
     pub const fn new(level: u64) -> Self {
-        Self::with_base(GD_21, level)
+        Self::with_base(GD_19, level)
     }
 
     pub const fn with_base(base: BaseRequest<'a>, level: u64) -> Self {
