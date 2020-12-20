@@ -1,4 +1,4 @@
-use base64::{DecodeError, URL_SAFE};
+use base64::{DecodeError, URL_SAFE, STANDARD};
 use percent_encoding::{percent_decode_str, utf8_percent_encode, AsciiSet, CONTROLS};
 use serde::{export::Formatter, ser::Error as _, Deserialize, Deserializer, Serialize, Serializer};
 use std::{borrow::Cow, fmt::Display, num::ParseIntError, str::Utf8Error, string::FromUtf8Error};
@@ -208,7 +208,7 @@ impl<'a> ThunkContent<'a> for Base64Decoded<'a> {
     type Error = ProcessError;
 
     fn from_unprocessed(unprocessed: &'a str) -> Result<Self, ProcessError> {
-        let vec = base64::decode_config(unprocessed, URL_SAFE).map_err(ProcessError::Base64)?;
+        let vec = base64::decode_config(unprocessed, STANDARD).map_err(ProcessError::Base64)?;
         let string = String::from_utf8(vec).map_err(ProcessError::FromUtf8)?;
 
         Ok(Base64Decoded(Cow::Owned(string)))
