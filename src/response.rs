@@ -59,7 +59,9 @@ impl<'a> From<DeError<'a>> for ResponseError<'a> {
 }
 
 pub fn parse_get_gj_levels_response(response: &str) -> Result<Vec<ListedLevel>, ResponseError> {
-    if response == "-1" {
+    // cvolton's gdps deals with an empty set in a different way
+    // it returns an empty list, as opposed to a -1
+    if response == "-1" || response.starts_with("###") {
         return Err(ResponseError::NotFound)
     }
 
