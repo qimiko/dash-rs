@@ -202,7 +202,7 @@ mod tests {
 
         assert_eq!(
             super::super::to_string(request),
-            "gameVersion=21&binaryVersion=33&secret=Wmfd2893gb7&total=0&page=2&mode=1&levelID=1234&count=15"
+            "gameVersion=19&binaryVersion=24&secret=Wmfd2893gb7&total=0&page=2&mode=1&levelID=1234&count=15"
         );
     }
 
