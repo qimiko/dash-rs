@@ -83,7 +83,6 @@ fn deserialize_too_many_fields() {
     helper::load::<Creator>(CREATOR_REGISTERED_DATA_TOO_MANY_FIELDS);
 }
 
-
 #[ignore]
 #[test]
 fn deserialize_level() {
@@ -91,7 +90,6 @@ fn deserialize_level() {
 
     let mut level = helper::load_processed::<Level>(include_str!("data/11774780_dark_realm_gjdownload_response"));
 }
-
 
 #[test]
 fn deserialize_level2() {
