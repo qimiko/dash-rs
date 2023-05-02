@@ -464,7 +464,7 @@ mod tests {
 
         assert!(result.is_ok(), "{:?}", result);
         assert_eq!(
-            "gameVersion=21&binaryVersion=33&secret=Wmfd2893gb7&levelID=0&inc=0&extra=0",
+            "gameVersion=19&binaryVersion=24&secret=Wmfd2893gb7&levelID=0&inc=0&extra=0",
             String::from_utf8(buffer).unwrap()
         );
     }
