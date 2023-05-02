@@ -1,4 +1,4 @@
-use base64::{DecodeError, URL_SAFE, STANDARD};
+use base64::{DecodeError, STANDARD, URL_SAFE};
 use percent_encoding::{percent_decode_str, utf8_percent_encode, AsciiSet, CONTROLS};
 use serde::{ser::Error as _, Deserialize, Deserializer, Serialize, Serializer};
 use std::{
