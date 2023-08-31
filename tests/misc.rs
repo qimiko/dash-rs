@@ -91,7 +91,6 @@ fn deserialize_level() {
     let mut level = helper::load_processed::<Level>(include_str!("data/11774780_dark_realm_gjdownload_response"));
 }
 
-#[ignore]
 #[test]
 fn deserialize_level2() {
     init_log();

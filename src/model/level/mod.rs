@@ -7,6 +7,7 @@ use std::{
     io::Read,
 };
 
+use base64::URL_SAFE;
 use flate2::read::{GzDecoder, GzEncoder, ZlibDecoder};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -339,14 +340,25 @@ impl Password {
     fn from_robtop(raw_password_data: &str) -> Result<Self, ProcessError> {
         Ok(match raw_password_data {
             "0" => Password::NoCopy,
-            "1" => Password::FreeCopy,
+            "Aw==" => Password::FreeCopy,
             _ => {
+                // More than enough for storing the decoded password even if in future the format grows
+                let mut decoded_buffer = [0; 32];
+                let password_len =
+                    base64::decode_config_slice(raw_password_data, URL_SAFE, &mut decoded_buffer).map_err(ProcessError::Base64)?;
+
+                // This xor pass is applied after we base64 decoded the input, it's how the game tries to protect
+                // data
+                util::cyclic_xor(&mut decoded_buffer[..password_len], LEVEL_PASSWORD_XOR_KEY);
+
                 // Geometry Dash adds an initial '1' character at the beginning that we don't care about, we just
                 // skip it
-                match raw_password_data[1..].parse::<u32>() {
-                    Ok(password) => Password::PasswordCopy(password),
-                    Err(_) => Password::FreeCopy,
+
+                let mut password = 0;
+                for byte in &decoded_buffer[1..password_len] {
+                    password = password * 10 + (byte - b'0') as u32
                 }
+                Password::PasswordCopy(password)
             },
         })
     }
@@ -358,7 +370,7 @@ impl Serialize for Internal<Password> {
         S: Serializer,
     {
         match self.0 {
-            Password::FreeCopy => serializer.serialize_str("1"),
+            Password::FreeCopy => serializer.serialize_str("Aw=="),
             Password::NoCopy => serializer.serialize_str("0"),
             Password::PasswordCopy(pw) => {
                 // serialize_bytes does the base64 encode by itself
@@ -813,10 +825,10 @@ mod tests {
 
     #[test]
     fn deserialize_password() {
-        assert_eq!(Password::from_robtop("1123456").unwrap(), Password::PasswordCopy(123456));
-        assert_eq!(Password::from_robtop("1003101").unwrap(), Password::PasswordCopy(3101));
-        assert_eq!(Password::from_robtop("1000000").unwrap(), Password::PasswordCopy(0));
-        assert_eq!(Password::from_robtop("1").unwrap(), Password::FreeCopy);
+        assert_eq!(Password::from_robtop("AwcBBQAHAA==").unwrap(), Password::PasswordCopy(123456));
+        assert_eq!(Password::from_robtop("AwUCBgU=").unwrap(), Password::PasswordCopy(3101));
+        assert_eq!(Password::from_robtop("AwYDBgQCBg==").unwrap(), Password::PasswordCopy(0));
+        assert_eq!(Password::from_robtop("Aw==").unwrap(), Password::FreeCopy);
         assert_eq!(Password::from_robtop("0").unwrap(), Password::NoCopy);
     }
 
