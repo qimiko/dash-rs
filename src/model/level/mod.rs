@@ -339,8 +339,8 @@ impl Password {
     /// encoding described in [`Password`]'s documentation
     fn from_robtop(raw_password_data: &str) -> Result<Self, ProcessError> {
         Ok(match raw_password_data {
-            "0" => Password::NoCopy,
-            "Aw==" => Password::FreeCopy,
+            "0" | "Ag==" => Password::NoCopy,
+            "1" | "Aw==" => Password::FreeCopy,
             _ => {
                 // More than enough for storing the decoded password even if in future the format grows
                 let mut decoded_buffer = [0; 32];
@@ -830,6 +830,7 @@ mod tests {
         assert_eq!(Password::from_robtop("AwYDBgQCBg==").unwrap(), Password::PasswordCopy(0));
         assert_eq!(Password::from_robtop("Aw==").unwrap(), Password::FreeCopy);
         assert_eq!(Password::from_robtop("0").unwrap(), Password::NoCopy);
+        assert_eq!(Password::from_robtop("Ag==").unwrap(), Password::NoCopy);
     }
 
     #[test]
