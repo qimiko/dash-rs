@@ -1,15 +1,9 @@
 use dash_rs::{
-    model::{
-        creator::Creator,
-        level::{DemonRating, Featured, Level, LevelData, LevelLength, LevelRating, Password},
-        song::{MainSong, NewgroundsSong},
-        GameVersion,
-    },
-    Base64Decoded, Thunk,
+    model::{creator::Creator, song::NewgroundsSong},
+    GJFormat,
 };
-use std::borrow::Cow;
 
-mod helper;
+mod framework;
 
 const CREO_DUNE_DATA_TOO_MANY_FIELDS: &str = "1~|~771277~|~54~|~should be ignored~|~2~|~Creo - \
                                               Dune~|~3~|~50531~|~4~|~CreoMusic~|~5~|~8.\
@@ -18,93 +12,9 @@ const CREO_DUNE_DATA_TOO_MANY_FIELDS: &str = "1~|~771277~|~54~|~should be ignore
 
 const CREATOR_REGISTERED_DATA_TOO_MANY_FIELDS: &str = "4170784:Serponge:119741:34:fda:32:asd:3";
 
-const TIME_PRESSURE: Level = Level {
-    level_id: 897837,
-    name: Cow::Borrowed("time pressure"),
-    description: Some(Thunk::Processed(Base64Decoded(Cow::Borrowed(
-        "please rate and like  8-9 stars mabye?",
-    )))),
-    version: 2,
-    creator: 842519,
-    difficulty: LevelRating::Demon(DemonRating::Easy),
-    downloads: 3189574,
-    main_song: Some(MainSong {
-        main_song_id: 14,
-        name: "Electrodynamix",
-        artist: "DJ-Nate",
-    }),
-    gd_version: GameVersion::Unknown,
-    likes: 198542,
-    length: LevelLength::Long,
-    stars: 10,
-    featured: Featured::Featured(700),
-    copy_of: None,
-    two_player: false,
-    custom_song: None,
-    coin_amount: 0,
-    coins_verified: false,
-    stars_requested: None,
-    is_epic: false,
-    object_amount: None,
-    index_46: None,
-    index_47: None,
-    level_data: LevelData {
-        level_data: Thunk::Unprocessed("REMOVED"),
-        password: Password::PasswordCopy(3101),
-        time_since_upload: Cow::Borrowed("5 years"),
-        time_since_update: Cow::Borrowed("5 years"),
-        index_36: None,
-    },
-};
-
-impl<S, U> helper::ThunkProcessor for Level<'_, LevelData<'_>, S, U> {
-    fn process_all_thunks(&mut self) {
-        if let Some(ref mut hunk) = self.description {
-            assert!(hunk.process().is_ok())
-        }
-        let objects = self.level_data.level_data.process();
-        assert!(objects.is_ok(), "{:?}", objects.unwrap_err());
-    }
-}
-
-impl<S, U> helper::ThunkProcessor for Level<'_, (), S, U> {
-    fn process_all_thunks(&mut self) {
-        if let Some(ref mut hunk) = self.description {
-            assert!(hunk.process().is_ok())
-        }
-    }
-}
-
 #[test]
 fn deserialize_too_many_fields() {
-    init_log();
-
-    helper::load::<NewgroundsSong>(CREO_DUNE_DATA_TOO_MANY_FIELDS);
-    helper::load::<Creator>(CREATOR_REGISTERED_DATA_TOO_MANY_FIELDS);
-}
-
-#[ignore]
-#[test]
-fn deserialize_level() {
-    init_log();
-
-    let mut level = helper::load_processed::<Level>(include_str!("data/11774780_dark_realm_gjdownload_response"));
-}
-
-#[test]
-fn deserialize_level2() {
-    init_log();
-
-    let mut level = helper::load_processed::<Level>(include_str!("data/897837_time_pressure_gjdownload_response"));
-
-    level.level_data.level_data = Thunk::Unprocessed("REMOVED");
-
-    assert_eq!(level, TIME_PRESSURE);
-}
-
-fn init_log() {
-    if let Err(err) = env_logger::builder().is_test(true).try_init() {
-        // nothing to make the tests fail over
-        eprintln!("Error setting up env_logger: {:?}", err)
-    }
+    // Superfluous fields should just be ignored
+    NewgroundsSong::from_gj_str(CREO_DUNE_DATA_TOO_MANY_FIELDS).unwrap();
+    Creator::from_gj_str(CREATOR_REGISTERED_DATA_TOO_MANY_FIELDS).unwrap();
 }

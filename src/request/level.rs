@@ -3,7 +3,7 @@ use crate::{
         level::{DemonRating, LevelLength, LevelRating},
         song::MainSong,
     },
-    request::{BaseRequest, GD_21, REQUEST_BASE_URL},
+    request::{BaseRequest, GD_22, REQUEST_BASE_URL},
 };
 use serde::{Deserialize, Serialize, Serializer};
 
@@ -77,7 +77,7 @@ impl<'a> LevelRequest<'a> {
     /// values set the by the Geometry Dash Client
     pub const fn new(level_id: u64) -> LevelRequest<'static> {
         LevelRequest {
-            base: GD_21,
+            base: GD_22,
             level_id,
             inc: true,
             extra: false,
@@ -289,7 +289,7 @@ impl SearchFilters {
 /// + Unused values: `8`, `9`, `14`
 /// + The values `15` and `17` are only used in Geometry Dash World and are the
 /// same as `0` ([`LevelRequestType::Search`]) and `6` ([`LevelRequestType::Featured`]) respectively
-#[derive(Debug, Copy, Clone, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Hash, Serialize, Deserialize, Default)]
 #[serde(from = "i32", into = "i32")]
 pub enum LevelRequestType {
     /// A search request.
@@ -298,6 +298,7 @@ pub enum LevelRequestType {
     ///
     /// ## GD Internals:
     /// This variant is represented by the value `0` in requests
+    #[default]
     Search,
 
     /// Request to retrieve the list of most downloaded levels
@@ -381,12 +382,6 @@ pub enum LevelRequestType {
 
     /// Unknown variant not yet mapped by dash-rs
     Unknown(i32),
-}
-
-impl Default for LevelRequestType {
-    fn default() -> Self {
-        LevelRequestType::Search
-    }
 }
 
 impl From<i32> for LevelRequestType {
@@ -637,6 +632,7 @@ impl Serialize for LengthFilter {
             LevelLength::Medium => 2,
             LevelLength::Long => 3,
             LevelLength::ExtraLong => 4,
+            LevelLength::Platformer => 5,
         };
 
         serializer.serialize_i32(numerical_value)

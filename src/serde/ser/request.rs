@@ -13,8 +13,8 @@
 //!   investigated) TODO GAME SPECIFIC
 
 use crate::serde::SerError as Error;
-use dtoa::Floating;
-use itoa::Integer;
+use dtoa::Float;
+use itoa::{Buffer, Integer};
 use serde::{
     ser::{Error as _, Impossible, SerializeStruct},
     Serialize, Serializer,
@@ -200,15 +200,20 @@ impl<'ser, W: Write> ValueSerializer<'ser, W> {
     fn write_integer<I: Integer>(&mut self, int: I) -> Result<(), Error> {
         self.write_key()?;
 
-        itoa::write(&mut self.serializer.writer, int).map_err(Error::custom)?;
+        let mut buffer = Buffer::new();
+        self.serializer.writer.write(buffer.format(int).as_bytes()).map_err(Error::custom)?;
 
         Ok(())
     }
 
-    fn write_float<F: Floating>(&mut self, float: F) -> Result<(), Error> {
+    fn write_float<F: Float>(&mut self, float: F) -> Result<(), Error> {
         self.write_key()?;
 
-        dtoa::write(&mut self.serializer.writer, float).map_err(Error::custom)?;
+        let mut buffer = dtoa::Buffer::new();
+        self.serializer
+            .writer
+            .write(buffer.format(float).as_bytes())
+            .map_err(Error::custom)?;
 
         Ok(())
     }
@@ -344,7 +349,7 @@ impl<'ser, 'a, W: Write> Serializer for &'a mut ValueSerializer<'ser, W> {
 
     fn serialize_seq(self, _len: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
         if self.key.is_none() {
-            return Err(Error::Unsupported("Nested sequences"))
+            return Err(Error::Unsupported("Nested sequences"));
         }
 
         self.write_key()?;
@@ -382,7 +387,7 @@ impl<'ser, 'a, W: Write> Serializer for &'a mut ValueSerializer<'ser, W> {
 
     fn serialize_struct(self, _name: &'static str, _len: usize) -> Result<Self::SerializeStruct, Self::Error> {
         if self.key.is_none() {
-            return Err(Error::Unsupported("struct inside sequence"))
+            return Err(Error::Unsupported("struct inside sequence"));
         }
 
         // If we inline a struct, that struct might not be the first field we serialize. However, we do not
@@ -460,9 +465,8 @@ mod tests {
             writer: &mut buffer,
             is_start: true,
         };
-        let result = level_request.serialize(&mut ser);
+        level_request.serialize(&mut ser).unwrap();
 
-        assert!(result.is_ok(), "{:?}", result);
         assert_eq!(
             "gameVersion=19&binaryVersion=24&secret=Wmfd2893gb7&levelID=0&inc=0&extra=0",
             String::from_utf8(buffer).unwrap()

@@ -2,12 +2,12 @@
 
 use crate::{
     model::creator::Creator,
-    request::{BaseRequest, GD_21, REQUEST_BASE_URL},
+    request::{BaseRequest, GD_22, REQUEST_BASE_URL},
 };
 use serde::Serialize;
 
-pub const GET_USER_ENDPOINT: &str = "getGJUserInfo20";
-pub const SEARCH_USER_ENDPOINT: &str = "getGJUsers20";
+pub const GET_USER_ENDPOINT: &str = "getGJUserInfo20.php";
+pub const SEARCH_USER_ENDPOINT: &str = "getGJUsers20.php";
 
 /// Struct modelled after a request to `getGJUserInfo20.php`.
 ///
@@ -29,7 +29,7 @@ pub struct UserRequest<'a> {
 impl UserRequest<'_> {
     pub const fn new(user_id: u64) -> UserRequest<'static> {
         UserRequest {
-            base: GD_21,
+            base: GD_22,
             user: user_id,
         }
     }
@@ -90,7 +90,7 @@ pub struct UserSearchRequest<'a> {
 impl<'a> UserSearchRequest<'a> {
     pub const fn new(search_string: &'a str) -> Self {
         UserSearchRequest {
-            base: GD_21,
+            base: GD_22,
             total: 0,
             page: 0,
             search_string,

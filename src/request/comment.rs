@@ -2,7 +2,7 @@
 
 use crate::{
     model::level::Level,
-    request::{BaseRequest, GD_19, GD_21, REQUEST_BASE_URL},
+    request::{BaseRequest, GD_19, REQUEST_BASE_URL},
 };
 use serde::Serialize;
 
@@ -168,7 +168,7 @@ impl<'a> ProfileCommentsRequest<'a> {
     }
 
     pub const fn new(account: u64) -> Self {
-        Self::with_base(GD_21, account)
+        Self::with_base(GD_19, account)
     }
 
     pub const fn with_base(base: BaseRequest<'a>, account: u64) -> Self {
@@ -217,7 +217,7 @@ mod tests {
 
         assert_eq!(
             super::super::to_string(request),
-            "gameVersion=21&binaryVersion=33&secret=Wmfd2893gb7&total=0&page=2&accountID=1710032"
+            "gameVersion=19&binaryVersion=24&secret=Wmfd2893gb7&total=0&page=2&accountID=1710032"
         );
     }
 }

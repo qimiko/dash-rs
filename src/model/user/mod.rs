@@ -43,6 +43,8 @@ impl From<u8> for ModLevel {
     }
 }
 
+crate::into_conversion!(ModLevel, u8);
+
 /// The type of icon displayed next a user's comment of next to their search result
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum IconType {
@@ -199,3 +201,6 @@ impl From<Color> for u8 {
         }
     }
 }
+
+crate::into_conversion!(Color, u8);
+crate::into_conversion!(IconType, u8);
